@@ -1,0 +1,50 @@
+import serial
+import time
+dataToWrite = serial.Serial("COM1", 9600, parity="N", stopbits=1, bytesize=8, xonxoff=True, timeout=5)
+
+
+def menu():
+    print("""
+    Opcje:
+        o - ODBIERZ
+        z - ZAKONCZ
+        p - ZADZWON POD NUMER 3965
+        m - wyslij wiadomosc
+        c - Odczytaj konsole
+        k - zamknij port i zakoncz program
+        s - MENU
+    """)
+
+menu()
+
+while True:
+
+    userSelect = input("Wybierz co chcesz zrobic: ")
+
+    if userSelect == 'o':
+        dataToWrite.write("ata\r".encode())
+
+    if userSelect == 'z':
+        dataToWrite.write("+++\r".encode())
+        dataToWrite.write("ath\r".encode())
+
+    if userSelect == 'k':
+        dataToWrite.close()
+        break
+
+    if userSelect == 'p':
+        dataToWrite.write("atd3965\r".encode())
+
+    if userSelect == 'm':
+        mg = input("Napisz wiadomosc: ")
+        dataToWrite.write("{}\r".format(mg).encode())
+
+    if userSelect == 's':
+        menu()
+
+    if userSelect == 'c':
+        time.sleep(1)
+        try:
+            print(dataToWrite.read(dataToWrite.in_waiting).decode("utf-8"))
+        except UnicodeDecodeError:
+            print('###')
